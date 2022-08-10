@@ -4,9 +4,10 @@ int main(int argc, char* argv[])
 {
     int result = 0;
 
-    player_hand_t player1, player2;
+    // We start with the deck of 52 cards
     auto deck = create_deck();
 
+    // The deck is shuffled
     shuffle_deck(deck);
 
     play_match(deck);
