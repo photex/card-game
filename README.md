@@ -9,4 +9,4 @@ popd
 ninja -C build && watch -n 1 build/cardgame-bin
 ```
 
-![Screencap](screencast.webm)
+![Screencap](screencast.mp4)
