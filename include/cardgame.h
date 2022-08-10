@@ -39,4 +39,4 @@ void shuffle_deck(deck_t&);
 
 void deal_cards(deck_t const& deck, player_hand_t& player1, player_hand_t& player2);
 
-void play_match(deck_t const& deck);
+match_result_t play_match(deck_t const& deck);

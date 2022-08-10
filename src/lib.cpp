@@ -80,31 +80,35 @@ void shuffle_deck(deck_t& deck)
     print_cards(deck, "Shuffled Deck");
 }
 
-void deal_cards(deck_t const& deck, player_hand_t& player1,
-    player_hand_t& player2)
+void deal_cards(deck_t const& deck, match_t& match)
 {
+    assert(match.player1_hand.empty());
+    assert(match.player1_score == 0);
+
+    assert(match.player2_hand.empty());
+    assert(match.player2_score == 0);
+
     uint32_t step = 0;
     for (auto const& card : deck) {
         if (step % 2) {
-            player1.push_back(card);
+            match.player1_hand.push_back(card);
         } else {
-            player2.push_back(card);
+            match.player2_hand.push_back(card);
         }
 
         step++;
     }
 
-    assert(player1.size() == MAX_HAND_SIZE);
-
-    assert(player2.size() == MAX_HAND_SIZE);
+    assert(match.player1_hand.size() == MAX_HAND_SIZE);
+    assert(match.player2_hand.size() == MAX_HAND_SIZE);
 }
 
-void play_match(deck_t const& deck)
+match_result_t play_match(deck_t const& deck)
 {
     match_t match;
 
     // We deal out those cards between the 2 players. Each player gets half the deck.
-    deal_cards(deck, match.player1_hand, match.player2_hand);
+    deal_cards(deck, match);
 
     print_cards(match.player1_hand, "Player 1 Hand");
     print_cards(match.player2_hand, "Player 2 Hand");
@@ -134,7 +138,9 @@ void play_match(deck_t const& deck)
 
     match.print_score();
 
-    switch (match.results()) {
+    auto results = match.results();
+
+    switch (results) {
     case match_result_t::in_progress: {
         std::cerr << "Match finished but is still in progress?" << std::endl;
     } break;
@@ -150,4 +156,6 @@ void play_match(deck_t const& deck)
     }
 
     std::cout << std::endl;
+
+    return results;
 }
