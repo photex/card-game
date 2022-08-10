@@ -10,14 +10,14 @@ const int MAX_HAND_SIZE = DECK_SIZE / 2;
 using deck_t = std::array<int, DECK_SIZE>;
 using player_hand_t = std::vector<int>;
 
-enum class round_result_t {
+enum class match_result_t {
     in_progress,
     player1,
     player2,
     draw,
 };
 
-struct round_t {
+struct match_t {
     uint32_t player1_score = 0;
     uint32_t player2_score = 0;
 
@@ -28,7 +28,7 @@ struct round_t {
 
     std::pair<int, int> draw_next();
 
-    round_result_t results() const;
+    match_result_t results() const;
 
     void print_score() const;
 };
@@ -39,4 +39,4 @@ void shuffle_deck(deck_t&);
 
 void deal_cards(deck_t const& deck, player_hand_t& player1, player_hand_t& player2);
 
-void play_round(deck_t const& deck);
+void play_match(deck_t const& deck);

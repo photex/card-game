@@ -9,7 +9,7 @@ int main(int argc, char* argv[])
 
     shuffle_deck(deck);
 
-    play_round(deck);
+    play_match(deck);
 
     return result;
 }

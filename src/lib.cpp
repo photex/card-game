@@ -1,5 +1,4 @@
 
-// I wouldn't typically use iostreams for logging in a library
 #include <iomanip>
 #include <iostream>
 
@@ -13,12 +12,12 @@
 
 #define DEBUG_OUTPUT
 
-bool round_t::cards_remaining() const
+bool match_t::cards_remaining() const
 {
     return !player1_hand.empty() && !player2_hand.empty();
 }
 
-std::pair<int, int> round_t::draw_next()
+std::pair<int, int> match_t::draw_next()
 {
     auto result = std::make_pair(player1_hand.back(), player2_hand.back());
 
@@ -28,20 +27,22 @@ std::pair<int, int> round_t::draw_next()
     return result;
 }
 
-round_result_t round_t::results() const
+match_result_t match_t::results() const
 {
-    auto result = round_result_t::draw;
+    // At the end of the game the player who has the most points wins
+
+    auto result = match_result_t::draw;
     if (cards_remaining()) {
-        result = round_result_t::in_progress;
+        result = match_result_t::in_progress;
     } else if (player1_score > player2_score) {
-        result = round_result_t::player1;
+        result = match_result_t::player1;
     } else if (player1_score < player2_score) {
-        result = round_result_t::player2;
+        result = match_result_t::player2;
     }
     return result;
 }
 
-void round_t::print_score() const
+void match_t::print_score() const
 {
     std::cout << "Score: P1 (" << player1_score << ") vs P2 (" << player2_score << ")\n\n";
 }
@@ -61,9 +62,7 @@ void print_cards(T const& cards, char const* msg)
 
 deck_t create_deck()
 {
-    // Instructions were:
     // "We start with the deck of 52 cards, each uniquely numbered from 1 to 53"
-    // So, card I'm just setting the last card to 53 instead of 52.
 
     deck_t deck;
     std::iota(deck.begin(), deck.end(), 1);
@@ -100,37 +99,52 @@ void deal_cards(deck_t const& deck, player_hand_t& player1,
     assert(player2.size() == MAX_HAND_SIZE);
 }
 
-void play_round(deck_t const& deck)
+void play_match(deck_t const& deck)
 {
-    round_t round;
+    match_t match;
 
-    deal_cards(deck, round.player1_hand, round.player2_hand);
+    // We deal out those cards between the 2 players. Each player gets half the deck.
+    deal_cards(deck, match.player1_hand, match.player2_hand);
 
-    print_cards(round.player1_hand, "Player 1 Hand");
-    print_cards(round.player2_hand, "Player 2 Hand");
+    print_cards(match.player1_hand, "Player 1 Hand");
+    print_cards(match.player2_hand, "Player 2 Hand");
 
-    while (round.cards_remaining()) {
-        const auto [player1_draw, player2_draw] = round.draw_next();
+    // Rounds are played until all the cards are discarded.
+    while (match.cards_remaining()) {
+        // On each turn of the game, both players turn over their topmost card and they compare the value of those cards.
+        // The player with the higher valued card "wins" the round and gets a point.
+        // The two cards being compared are discarded.
+
+        const auto [player1_draw, player2_draw] = match.draw_next();
+        // When each round is played you should print each player's card value along with an indication of which player won that round.
+        std::cout << "P1 (" << std::setw(2) << player1_draw << ") : (" << std::setw(2) << player2_draw << ") P2 \t- ";
         if (player1_draw > player2_draw) {
-            round.player1_score++;
+            match.player1_score++;
+            std::cout << "Player 1 wins the round.";
         } else {
-            round.player2_score++;
+            match.player2_score++;
+            std::cout << "Player 2 wins the round.";
         }
+        std::cout << std::endl;
     }
 
-    round.print_score();
+    std::cout << std::endl;
 
-    switch (round.results()) {
-    case round_result_t::in_progress: {
-        std::cerr << "Round finished but is still in progress?" << std::endl;
+    // "When all rounds are played you should print each player's final score along with an indication of which player won overall."
+
+    match.print_score();
+
+    switch (match.results()) {
+    case match_result_t::in_progress: {
+        std::cerr << "Match finished but is still in progress?" << std::endl;
     } break;
-    case round_result_t::player1: {
+    case match_result_t::player1: {
         std::cout << "Player 1 Wins!";
     } break;
-    case round_result_t::player2: {
+    case match_result_t::player2: {
         std::cout << "Player 2 Wins!";
     } break;
-    case round_result_t::draw: {
+    case match_result_t::draw: {
         std::cout << "Draw!";
     } break;
     }
